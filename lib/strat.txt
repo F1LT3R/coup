@@ -1,0 +1,22 @@
+
+Action: [Target, Result]
+  Challenge: [Fake or Bluff]
+
+
+
+Action: [Type: Income, Target: Treasury]
+  | Unchallengable: Continue
+  | Unblockable: Continue
+Action: Resolve
+
+
+
+Action: [Type: Foreign Aid, Target: Treasury]
+  | Unchallengable: Continue
+  | Counteraction: Block Foreign Aid [Requires: Duke]
+  |   | Challenge: [You don't have Duke]
+  |   |   | Reveal: Duke
+  |   | Challenge: Fail, has Duke
+  | Counteraction: Continute
+Action: Fail
+
