@@ -1,8 +1,7 @@
-var tests = []
-  , begunTests = false
-  , current_test = null
-  , failures = 0
-  ;
+var tests = [], d_tests = [],
+  begunTests = false,
+  current_test = null,
+  failures = 0;
 
 function expect (expect) {
 
@@ -158,6 +157,20 @@ function describe (should, callback, ms) {
   }
 }
 
+function ddescribe (should, callback, ms) {
+  d_tests.push({
+    desc: should,
+    spec: callback,
+    asserts: [],
+    timeout: ms
+  });
+
+  if (begunTests) {
+    runTests();
+  }
+}
+
+
 
 function runTests () {
 
@@ -178,9 +191,14 @@ function runTests () {
         failTimeout(elapsed);
       }
     }
-  }
+  };
 
   var startTests = + new Date();
+
+  if (d_tests.length > 0) {
+    tests = d_tests;
+  }
+
 
   tests.forEach(function (test) {
     current_test = test;
@@ -215,6 +233,7 @@ function runTests () {
 
 module.exports = {
   describe: describe,
+  ddescribe: ddescribe,
   expect: expect,
   run: runTests,
 };

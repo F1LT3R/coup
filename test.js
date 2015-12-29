@@ -1,6 +1,7 @@
 var test = require('./test-runner.js');
 
 describe = test.describe;
+ddescribe = test.ddescribe;
 expect = test.expect;
 run = test.run;
 
@@ -48,7 +49,7 @@ describe('Natasha\'s Foreign Aid can be blocked', function () {
   var game = Game(treasury, deck, actions);
 
   var Natasha = Player('Natasha');
-  var Sasha = Player('Sasha', { alwaysBlocks: true });
+  var Sasha = Player('Sasha', { alwaysCounteract: true });
   game.addPlayers([Natasha, Sasha]);
 
   expect(game.players.length).toBe(2);
@@ -58,6 +59,7 @@ describe('Natasha\'s Foreign Aid can be blocked', function () {
 });
 
 
+
 describe('Natasha\'s Foreign Aid can be blocked & challenged', function () {
   var treasury = Treasury().takeCoins(2);
   var deck = Deck();
@@ -65,8 +67,8 @@ describe('Natasha\'s Foreign Aid can be blocked & challenged', function () {
   var game = Game(treasury, deck, actions);
 
   var Natasha = Player('Natasha');
-  var Sasha = Player('Sasha', { alwaysBlocks: true });
-  var Haig = Player('Haig', { alwaysChallenges: true });
+  var Sasha = Player('Sasha', { alwaysCounteract: true });
+  var Haig = Player('Haig', { alwaysChallenge: true });
   game.addPlayers([Natasha, Sasha, Haig]);
   expect(game.players.length).toBe(3);
 
@@ -76,6 +78,194 @@ describe('Natasha\'s Foreign Aid can be blocked & challenged', function () {
 
 
 
+
+describe('Natasha can collect Income', function () {
+  var treasury = Treasury().takeCoins(1);
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha', game);
+  game.addPlayer(Natasha);
+  game.action(actions.Income(Natasha, treasury));
+
+  expect(Natasha.coins).toBe(1);
+});
+
+
+describe('Natasha can collect Foreign Aid', function () {
+  var treasury = Treasury().takeCoins(2);
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+  game.addPlayer(Natasha);
+  game.action(actions.ForeignAid(Natasha, treasury));
+
+  expect(Natasha.coins).toBe(2);
+});
+
+
+describe('Natasha\'s Foreign Aid can be blocked', function () {
+  var treasury = Treasury().takeCoins(2);
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+  var Sasha = Player('Sasha', { alwaysCounteract: true });
+  game.addPlayers([Natasha, Sasha]);
+
+  expect(game.players.length).toBe(2);
+
+  game.action(actions.ForeignAid(Natasha, treasury));
+  expect(Natasha.coins).toBe(0);
+});
+
+
+
+
+
+describe('Natasha can Coup Sasha for 7 coins', function () {
+  var treasury = Treasury().takeCoins(7);
+  expect(treasury.coins).toBe(7);
+
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+  var Sasha = Player('Sasha');
+  game.addPlayers([Natasha, Sasha]);
+  expect(game.players.length).toBe(2);
+
+  Natasha.takeCoins(treasury.payCoins(7));
+  expect(Natasha.coins).toBe(7);
+  expect(treasury.coins).toBe(0);
+
+  game.action(actions.Coup(Natasha, Sasha, treasury));
+  expect(Natasha.coins).toBe(0);
+  expect(treasury.coins).toBe(7);
+});
+
+
+describe('Natasha can Tax for 3 coins', function () {
+  var treasury = Treasury().takeCoins(3);
+  expect(treasury.coins).toBe(3);
+
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+  game.addPlayers([Natasha]);
+  expect(game.players.length).toBe(1);
+
+  expect(Natasha.coins).toBe(0);
+
+  game.action(actions.Tax(Natasha, treasury));
+  expect(Natasha.coins).toBe(3);
+  expect(treasury.coins).toBe(0);
+});
+
+
+describe('Natasha\'s Tax can be challenged', function () {
+  var treasury = Treasury().takeCoins(3);
+  expect(treasury.coins).toBe(3);
+
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+  var Sasha = Player('Sasha', {alwaysChallenge: true});
+  game.addPlayers([Natasha, Sasha]);
+  expect(game.players.length).toBe(2);
+
+  expect(Natasha.coins).toBe(0);
+
+  game.action(actions.Tax(Natasha, treasury));
+  expect(Natasha.coins).toBe(0);
+  expect(treasury.coins).toBe(3);
+});
+
+
+describe('Natasha can Assassinate for 3 coins', function () {
+  var treasury = Treasury().takeCoins(3);
+  expect(treasury.coins).toBe(3);
+
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+  var Sasha = Player('Sasha');
+  game.addPlayers([Natasha, Sasha]);
+  expect(game.players.length).toBe(2);
+
+  Natasha.takeCoins(treasury.payCoins(3));
+  expect(Natasha.coins).toBe(3);
+  expect(treasury.coins).toBe(0);
+
+  game.action(actions.Assassinate(Natasha, Sasha, treasury, deck));
+  expect(Natasha.coins).toBe(0);
+  expect(treasury.coins).toBe(3);
+});
+
+
+describe('Natasha\'s Assassination can be challenged', function () {
+  var treasury = Treasury().takeCoins(3);
+  expect(treasury.coins).toBe(3);
+
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+  var Sasha = Player('Sasha', {alwaysChallenge: true});
+  game.addPlayers([Natasha, Sasha]);
+  expect(game.players.length).toBe(2);
+
+  Natasha.takeCoins(treasury.payCoins(3));
+  expect(Natasha.coins).toBe(3);
+  expect(treasury.coins).toBe(0);
+
+  game.action(actions.Assassinate(Natasha, Sasha, treasury, deck));
+  expect(Natasha.coins).toBe(3);
+  expect(treasury.coins).toBe(0);
+});
+
+
+describe('Natasha\'s Assassination can be challenged & blocked', function () {
+  var treasury = Treasury().takeCoins(3);
+  expect(treasury.coins).toBe(3);
+
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+
+  var Sasha = Player('Sasha', {
+    alwaysCounteract: true
+  });
+
+  var Haig = Player('Haig', {
+    alwaysChallenge: true
+  });
+
+  game.addPlayers([Natasha, Sasha, Haig]);
+  expect(game.players.length).toBe(3);
+
+  Natasha.takeCoins(treasury.payCoins(3));
+  expect(Natasha.coins).toBe(3);
+  expect(treasury.coins).toBe(0);
+
+  game.action(actions.Assassinate(Natasha, Sasha, treasury, deck));
+  expect(Natasha.coins).toBe(0);
+  expect(treasury.coins).toBe(3);
+});
 
 
 test.run();
