@@ -6,12 +6,30 @@ expect = test.expect;
 run = test.run;
 
 
+
 var Game = require('lib/game');
 var Treasury = require('lib/treasury');
 var Deck = require('lib/deck');
 var Actions = require('lib/actions');
 var Player = require('lib/player');
 
+var playerNames = [
+  'Natasha',
+  'Sacha',
+  'Haig',
+  'Luis',
+  'Jarek',
+  'Stephanie',
+];
+
+
+
+
+// Action Scenarios
+//
+// AS
+// A+C-
+// C
 
 
 describe('Natasha can sollect Income', function () {
@@ -42,7 +60,7 @@ describe('Natasha can collect Foreign Aid', function () {
 });
 
 
-describe('Natasha\'s Foreign Aid can be blocked', function () {
+describe('Natasha\'s Foreign Aid can be counteracted', function () {
   var treasury = Treasury().takeCoins(2);
   var deck = Deck();
   var actions = Actions();
@@ -60,7 +78,7 @@ describe('Natasha\'s Foreign Aid can be blocked', function () {
 
 
 
-describe('Natasha\'s Foreign Aid can be blocked & challenged', function () {
+describe('Natasha\'s Foreign Aid can be counteracted & challenged', function () {
   var treasury = Treasury().takeCoins(2);
   var deck = Deck();
   var actions = Actions();
@@ -107,7 +125,7 @@ describe('Natasha can collect Foreign Aid', function () {
 });
 
 
-describe('Natasha\'s Foreign Aid can be blocked', function () {
+describe('Natasha\'s Foreign Aid can be counteracted', function () {
   var treasury = Treasury().takeCoins(2);
   var deck = Deck();
   var actions = Actions();
@@ -237,7 +255,7 @@ describe('Natasha\'s Assassination can be challenged', function () {
 });
 
 
-describe('Natasha\'s Assassination can be challenged & blocked', function () {
+describe('Natasha\'s Assassination can be challenged & counteracted', function () {
   var treasury = Treasury().takeCoins(3);
   expect(treasury.coins).toBe(3);
 
@@ -266,6 +284,118 @@ describe('Natasha\'s Assassination can be challenged & blocked', function () {
   expect(Natasha.coins).toBe(0);
   expect(treasury.coins).toBe(3);
 });
+
+
+describe('Natasha can Steal', function () {
+  var treasury = Treasury().takeCoins(2);
+  expect(treasury.coins).toBe(2);
+
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+
+  var Sasha = Player('Sasha');
+
+  game.addPlayers([Natasha, Sasha]);
+  expect(game.players.length).toBe(2);
+
+  Sasha.takeCoins(treasury.payCoins(2));
+  expect(Sasha.coins).toBe(2);
+  expect(treasury.coins).toBe(0);
+
+  game.action(actions.Steal(Natasha, Sasha));
+  expect(Natasha.coins).toBe(2);
+  expect(treasury.coins).toBe(0);
+});
+
+
+describe('Natasha\'s Steal can be challenged', function () {
+  var treasury = Treasury().takeCoins(2);
+  expect(treasury.coins).toBe(2);
+
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+
+  var Sasha = Player('Sasha', {
+    alwaysChallenge: true
+  });
+
+  game.addPlayers([Natasha, Sasha]);
+  expect(game.players.length).toBe(2);
+
+  Sasha.takeCoins(treasury.payCoins(2));
+  expect(Sasha.coins).toBe(2);
+  expect(treasury.coins).toBe(0);
+
+  game.action(actions.Steal(Natasha, Sasha));
+  expect(Natasha.coins).toBe(0);
+  expect(Sasha.coins).toBe(2);
+});
+
+
+ddescribe('Natasha\'s Steal can be challenged & counteracted', function () {
+  var treasury = Treasury().takeCoins(2);
+  expect(treasury.coins).toBe(2);
+
+  var deck = Deck();
+  var actions = Actions();
+  var game = Game(treasury, deck, actions);
+
+  var Natasha = Player('Natasha');
+
+  var Sasha = Player('Sasha', {
+    alwaysCounteract: true,
+  });
+
+  var Haig = Player('Haig', {
+    alwaysChallenge: true,
+  });
+
+  var Will = Player('Will', {
+    alwaysChallenge: true,
+    alwaysCounteract: true,
+  });
+
+  game.addPlayers([Natasha, Sasha, Haig, Will]);
+  expect(game.players.length).toBe(4);
+
+  Sasha.takeCoins(treasury.payCoins(2));
+  expect(Sasha.coins).toBe(2);
+  expect(treasury.coins).toBe(0);
+
+  game.action(actions.Steal(Natasha, Sasha));
+  expect(Natasha.coins).toBe(2);
+  expect(Sasha.coins).toBe(0);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 test.run();
