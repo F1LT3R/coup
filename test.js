@@ -5,13 +5,13 @@ ddescribe = test.ddescribe;
 expect = test.expect;
 run = test.run;
 
+console.log(__dirname);
 
-
-var Game = require('lib/game');
-var Treasury = require('lib/treasury');
-var Deck = require('lib/deck');
-var Actions = require('lib/actions');
-var Player = require('lib/player');
+var Game = require('./lib/game');
+var Treasury = require('./lib/treasury');
+var Deck = require('./lib/deck');
+var Actions = require('./lib/actions');
+var Player = require('./lib/player');
 
 var playerNames = [
   'Natasha',
