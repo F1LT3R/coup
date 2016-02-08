@@ -1,0 +1,16 @@
+{
+  "globals": {
+    "console": true,
+    "module": true,
+    "angular": true,
+    "require": true,
+    "define": true,
+    "process": true,
+    "__dirname": true
+  },
+  "laxbreak": false,
+  "undef": true,
+  "laxcomma": false,
+  "multistr": true,
+  "strict": true
+}
